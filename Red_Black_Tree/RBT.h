@@ -3,6 +3,7 @@
 #include <cmath>
 
 namespace RBT {
+
 	enum Color { RED, BLACK };
 
 	template <typename T>
@@ -10,16 +11,16 @@ namespace RBT {
 
 		struct Node {
 			T data;
-			size_t index;
 			Color color;
+			size_t index;
 			Node* parent;
 			Node* left;
 			Node* right;
 
 			Node(T inData, size_t inIndex) {
 				data = inData;
-				index = inIndex;
 				color = RED;
+				index = inIndex;
 				parent = nullptr;
 				left = nullptr;
 				right = nullptr;
@@ -50,14 +51,14 @@ namespace RBT {
 			return ((leftCount > rightCount) ? leftCount : rightCount) + 1;
 		}
 
-		bool Accommodate(Node* seeker, Node* current, bool (*cmp)(T, T)) {
-			if (!seeker) {
+		bool Insert(Node* node, Node* current, bool (*cmp)(T, T)) {
+			if (!node) {
 				return false;
 			}
 
 			if (!current) {
 				if (!root) {
-					root = seeker;
+					root = node;
 					root->color = BLACK;
 					size++;
 					return true;
@@ -66,46 +67,42 @@ namespace RBT {
 			}
 
 			if (cmp) {
-				if (cmp(seeker->data, current->data)) {
+				if (cmp(node->data, current->data)) {
 					if (!current->right) {
-						current->right = seeker;
-						seeker->parent = current;
-						LogicalFix(seeker);
+						current->right = node;
+						node->parent = current;
 					}
 					else {
-						return Accommodate(seeker, current->right, cmp);
+						return Insert(node, current->right, cmp);
 					}
 				}
 				else {
 					if (!current->left) {
-						current->left = seeker;
-						seeker->parent = current;
-						LogicalFix(seeker);
+						current->left = node;
+						node->parent = current;
 					}
 					else {
-						return Accommodate(seeker, current->left, cmp);
+						return Insert(node, current->left, cmp);
 					}
 				}
 			}
 			else if constexpr (std::is_arithmetic_v<T>) {
-				if (seeker->data > current->data) {
+				if (node->data > current->data) {
 					if (!current->right) {
-						current->right = seeker;
-						seeker->parent = current;
-						LogicalFix(seeker);
+						current->right = node;
+						node->parent = current;
 					}
 					else {
-						return Accommodate(seeker, current->right, cmp);
+						return Insert(node, current->right, cmp);
 					}
 				}
 				else {
 					if (!current->left) {
-						current->left = seeker;
-						seeker->parent = current;
-						LogicalFix(seeker);
+						current->left = node;
+						node->parent = current;
 					}
 					else {
-						return Accommodate(seeker, current->left, cmp);
+						return Insert(node, current->left, cmp);
 					}
 				}
 			}
@@ -114,11 +111,50 @@ namespace RBT {
 			}
 
 			size++;
+			InsertFix(node);
+
 			return true;
 		}
 
-		void LogicalFix(Node* node) {
-			
+		bool InsertFix(Node* node) {
+			if (!node || !node->parent) {
+				return false;
+			}
+
+			while (node != root && node->parent->color == RED) {
+				Node* node_gp = node->parent->parent;
+				Node* node_u = (node->parent == node_gp->left) ? node_gp->right : node_gp->left;
+
+				if (node_u && node_u->color == RED) {
+					node->parent->color = BLACK;
+					node_u->color = BLACK;
+					node_gp->color = RED;
+					node = node_gp;
+				}
+				else {
+					if (node->parent == node_gp->left) {
+						if (node == node->parent->right) {
+							node = node->parent;
+							RotateLeft(node);
+						}
+						node->parent->color = BLACK;
+						node_gp->color = RED;
+						RotateRight(node_gp);
+					}
+					else {
+						if (node == node->parent->left) {
+							node = node->parent;
+							RotateRight(node);
+						}
+						node->parent->color = BLACK;
+						node_gp->color = RED;
+						RotateLeft(node_gp);
+					}
+				}
+			}
+
+			root->color = BLACK;
+			return true;
 		}
 
 		bool RotateLeft(Node* node) {
@@ -405,7 +441,7 @@ namespace RBT {
 		bool Push(T data, bool (*cmp)(T, T) = nullptr) {
 			Node* node = new Node(data, next_index++);
 
-			if (Accommodate(node, root, cmp)) {
+			if (Insert(node, root, cmp)) {
 				return true;
 			}
 
