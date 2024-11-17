@@ -3,6 +3,7 @@
 #include <cmath>
 
 namespace RBT {
+	enum Color { RED, BLACK };
 
 	template <typename T>
 	class RedBlackTree {
@@ -10,7 +11,7 @@ namespace RBT {
 		struct Node {
 			T data;
 			size_t index;
-			bool is_red;
+			Color color;
 			Node* parent;
 			Node* left;
 			Node* right;
@@ -18,7 +19,7 @@ namespace RBT {
 			Node(T inData, size_t inIndex) {
 				data = inData;
 				index = inIndex;
-				is_red = false;
+				color = RED;
 				parent = nullptr;
 				left = nullptr;
 				right = nullptr;
@@ -57,6 +58,7 @@ namespace RBT {
 			if (!current) {
 				if (!root) {
 					root = seeker;
+					root->color = BLACK;
 					size++;
 					return true;
 				}
@@ -68,6 +70,7 @@ namespace RBT {
 					if (!current->right) {
 						current->right = seeker;
 						seeker->parent = current;
+						LogicalFix(seeker);
 					}
 					else {
 						return Accommodate(seeker, current->right, cmp);
@@ -77,6 +80,7 @@ namespace RBT {
 					if (!current->left) {
 						current->left = seeker;
 						seeker->parent = current;
+						LogicalFix(seeker);
 					}
 					else {
 						return Accommodate(seeker, current->left, cmp);
@@ -88,6 +92,7 @@ namespace RBT {
 					if (!current->right) {
 						current->right = seeker;
 						seeker->parent = current;
+						LogicalFix(seeker);
 					}
 					else {
 						return Accommodate(seeker, current->right, cmp);
@@ -97,6 +102,7 @@ namespace RBT {
 					if (!current->left) {
 						current->left = seeker;
 						seeker->parent = current;
+						LogicalFix(seeker);
 					}
 					else {
 						return Accommodate(seeker, current->left, cmp);
@@ -108,6 +114,66 @@ namespace RBT {
 			}
 
 			size++;
+			return true;
+		}
+
+		void LogicalFix(Node* node) {
+			
+		}
+
+		bool RotateLeft(Node* node) {
+			Node* temp = node->right;
+			if (!temp) {
+				return false;
+			}
+
+			node->right = temp->left;
+			if (temp->left) {
+				temp->left->parent = node;
+			}
+
+			temp->parent = node->parent;
+			if (!node->parent) {
+				root = temp;
+			}
+			else if (node == node->parent->left) {
+				node->parent->left = temp;
+			}
+			else {
+				node->parent->right = temp;
+			}
+
+			temp->left = node;
+			node->parent = temp;
+
+			return true;
+		}
+
+		bool RotateRight(Node* node) {
+			Node* temp = node->left;
+			if (!temp) {
+				return false;
+			}
+
+			node->left = temp->right;
+			if (temp->right) {
+				temp->right->parent = node;
+			}
+
+			temp->parent = node->parent;
+			if (!node->parent) {
+				root = temp;
+			}
+			else if (node == node->parent->left) {
+				node->parent->left = temp;
+			}
+			else {
+				node->parent->right = temp;
+			}
+
+			temp->right = node;
+			node->parent = temp;
+
 			return true;
 		}
 
@@ -124,11 +190,11 @@ namespace RBT {
 			}
 
 			if (node->parent) {
-				if (node->parent->right == node) {
-					node->parent->right = nullptr;
+				if (node->parent->left == node) {
+					node->parent->left = nullptr;
 				}
 				else {
-					node->parent->left = nullptr;
+					node->parent->right = nullptr;
 				}
 			}
 			else {
@@ -259,6 +325,14 @@ namespace RBT {
 			std::string text = "[ Index: ";
 			text += std::to_string(int(node->index));
 
+			text += " | Color: ";
+			if (node->color == RED) {
+				text += "Red";
+			}
+			else {
+				text += "Black";
+			}
+
 			text += " | Data: ";
 			if (str) {
 				text += str(node->data);
@@ -327,7 +401,7 @@ namespace RBT {
 		bool IsEmpty() const {
 			return size == 0;
 		}
-		// Has to be edited
+
 		bool Push(T data, bool (*cmp)(T, T) = nullptr) {
 			Node* node = new Node(data, next_index++);
 
@@ -351,7 +425,7 @@ namespace RBT {
 		Node* Find(T data, bool (*cmp1)(T, T) = nullptr, bool (*cmp2)(T, T) = nullptr) const {
 			return SearchFor(data, root, cmp1, cmp2);
 		}
-		// Can to be edited
+
 		std::string Preorder() const {
 			std::string text = "Preorder:\n";
 
@@ -361,7 +435,7 @@ namespace RBT {
 
 			return text;
 		}
-		// Can to be edited
+
 		std::string Inorder() const {
 			std::string text = "Inorder:\n";
 
@@ -371,9 +445,9 @@ namespace RBT {
 
 			return text;
 		}
-		// Has to be edited
+
 		std::string ToString(unsigned int limit = 0, std::string(*str)(T) = nullptr) const {
-			std::string text = "Binary Search Tree:\n";
+			std::string text = "Red Black Tree:\n";
 			text += "size: " + std::to_string(int(size)) + "\n";
 			text += "height: " + std::to_string(int(HeightOf(root))) + "\n";
 			text += "log2size: " + std::to_string(log2(size)) + "\n";
