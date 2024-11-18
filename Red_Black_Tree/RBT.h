@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <cmath>
 
 namespace RBT {
@@ -111,45 +112,46 @@ namespace RBT {
 			}
 
 			size++;
-			InsertFix(node);
-
-			return true;
+			return InsertFix(node);
 		}
 
 		bool InsertFix(Node* node) {
-			if (!node || !node->parent) {
+			if (!node) {
 				return false;
 			}
 
-			while (node != root && node->parent->color == RED) {
+			if (node->parent && node->parent->color != BLACK) {
+				Node* node_p = node->parent;
 				Node* node_gp = node->parent->parent;
-				Node* node_u = (node->parent == node_gp->left) ? node_gp->right : node_gp->left;
+				Node* node_u = (node_p == node_gp->left) ? node_gp->right : node_gp->left;
 
 				if (node_u && node_u->color == RED) {
-					node->parent->color = BLACK;
-					node_u->color = BLACK;
+					node_p->color = BLACK;
 					node_gp->color = RED;
-					node = node_gp;
+					node_u->color = BLACK;
+
+					return InsertFix(node_gp);
+				}
+
+				if (node_p == node_gp->left) {
+					if (node == node_p->right) {
+						node = node_p;
+						RotateLeft(node);
+					}
+
+					node->parent->color = BLACK;
+					node_gp->color = RED;
+					RotateRight(node_gp);
 				}
 				else {
-					if (node->parent == node_gp->left) {
-						if (node == node->parent->right) {
-							node = node->parent;
-							RotateLeft(node);
-						}
-						node->parent->color = BLACK;
-						node_gp->color = RED;
-						RotateRight(node_gp);
+					if (node == node_p->left) {
+						node = node_p;
+						RotateRight(node);
 					}
-					else {
-						if (node == node->parent->left) {
-							node = node->parent;
-							RotateRight(node);
-						}
-						node->parent->color = BLACK;
-						node_gp->color = RED;
-						RotateLeft(node_gp);
-					}
+
+					node->parent->color = BLACK;
+					node_gp->color = RED;
+					RotateLeft(node_gp);
 				}
 			}
 
@@ -313,44 +315,32 @@ namespace RBT {
 			}
 		}
 
-		std::string PreorderTraversal(Node* node) const {
+		void PreorderTraversal(Node* node, std::vector<Node*>& result) const {
 			if (!node) {
-				return "";
+				return;
 			}
 
-			std::string text = "[ Index: ";
-			text += std::to_string(int(node->index));
-			text += " ]\n";
-
+			result.push_back(node);
 			if (node->left) {
-				text += PreorderTraversal(node->left);
+				PreorderTraversal(node->left, result);
 			}
 			if (node->right) {
-				text += PreorderTraversal(node->right);
+				PreorderTraversal(node->right, result);
 			}
-
-			return text;
 		}
 
-		std::string InorderTraversal(Node* node) const {
+		void InorderTraversal(Node* node, std::vector<Node*>& result) const {
 			if (!node) {
-				return "";
+				return;
 			}
 
-			std::string text = "";
 			if (node->left) {
-				text += InorderTraversal(node->left);
+				InorderTraversal(node->left, result);
 			}
-
-			text += "[ Index: ";
-			text += std::to_string(int(node->index));
-			text += " ]\n";
-
+			result.push_back(node);
 			if (node->right) {
-				text += InorderTraversal(node->right);
+				InorderTraversal(node->right, result);
 			}
-
-			return text;
 		}
 
 		std::string CollectStrings(Node* node, unsigned int limit, std::string(*str)(T)) const {
@@ -462,24 +452,20 @@ namespace RBT {
 			return SearchFor(data, root, cmp1, cmp2);
 		}
 
-		std::string Preorder() const {
-			std::string text = "Preorder:\n";
+		std::vector<Node*> PreorderVector() const {
+			std::vector<Node*> nodes;
 
-			text += "{\n";
-			text += PreorderTraversal(root);
-			text += "}\n";
+			PreorderTraversal(root, nodes);
 
-			return text;
+			return nodes;
 		}
 
-		std::string Inorder() const {
-			std::string text = "Inorder:\n";
+		std::vector<Node*> InorderVector() const {
+			std::vector<Node*> nodes;
 
-			text += "{\n";
-			text += InorderTraversal(root);
-			text += "}\n";
+			InorderTraversal(root, nodes);
 
-			return text;
+			return nodes;
 		}
 
 		std::string ToString(unsigned int limit = 0, std::string(*str)(T) = nullptr) const {
