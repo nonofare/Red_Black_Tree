@@ -367,7 +367,7 @@ namespace RBT {
 				text += std::to_string(node->data);
 			}
 			else {
-				text = "Data type is not supported and no method was provided";
+				text = "Data type is not supported and no method was provided\n";
 			}
 
 			text += " | Parent: *";
@@ -477,7 +477,7 @@ namespace RBT {
 			text += "height to log2size ratio: " + std::to_string(double(HeightOf(root)) / log2(size)) + "\n";
 			text += "{\n";
 
-			if (limit == 0) {
+			if (limit <= 0) {
 				limit = size;
 			}
 
