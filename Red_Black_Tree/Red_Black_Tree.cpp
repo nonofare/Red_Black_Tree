@@ -34,7 +34,7 @@ int main() {
 
 	for (int i = 1; i <= MAX_ORDER; i++) {
 		std::cout << "--------------------------------" << std::endl;
-		std::cout << "Test: " << i << std::endl;
+		std::cout << "Test: " << i << std::endl << std::endl;
 
 		int n = pow(10, i);
 
@@ -48,8 +48,8 @@ int main() {
 		}
 		std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 
-		std::chrono::duration<double> time = end_time - start_time;
-		std::cout << "Pushing time: " << time.count() << "s" << std::endl;
+		std::chrono::duration<double> pushing_time = end_time - start_time;
+		std::cout << "Pushing time: " << pushing_time.count() << "s" << std::endl;
 		std::cout << rbt->ToString(3, some_objects_str);
 
 		int hits = 0;
@@ -65,9 +65,12 @@ int main() {
 		}
 		end_time = std::chrono::high_resolution_clock::now();
 
-		time = end_time - start_time;
-		std::cout << "Finding time: " << time.count() << "s" << std::endl;
-		std::cout << "Hits: " << hits << std::endl;
+		std::chrono::duration<double> finding_time = end_time - start_time;
+		std::cout << "Finding time: " << finding_time.count() << "s" << std::endl;
+		std::cout << "Hits: " << hits << std::endl << std::endl;
+
+		double total_time = pushing_time.count() + finding_time.count();
+		std::cout << "Total time: " << total_time << "s" << std::endl;
 
 		rbt->Erase();
 	}

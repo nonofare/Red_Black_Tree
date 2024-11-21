@@ -18,10 +18,10 @@ namespace RBT {
 			Node* left;
 			Node* right;
 
-			Node(T inData, size_t inIndex) {
-				data = inData;
+			Node(T in_data, size_t in_index) {
+				data = in_data;
 				color = RED;
-				index = inIndex;
+				index = in_index;
 				parent = nullptr;
 				left = nullptr;
 				right = nullptr;
