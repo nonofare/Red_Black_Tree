@@ -1,4 +1,4 @@
-# Red-Black Tree implementation in C++
+# Red-Black Tree Implementation in C++
 
 This project provides a C++ implementation of a templated **Red-Black Tree** (RBT) data structure. Red-black trees are a
 type of self-balancing binary search tree that guarantees O(log n) time complexity for insertion, deletion, and lookup
@@ -104,3 +104,23 @@ int main() {
     tree.erase();
     return 0;
 }
+```
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/RedBlackTree.git
+   ```
+
+2. **Include the `RBT.h` file in your project.**
+
+3. **Compile with a C++17-compatible compiler.**
+
+## Contributing
+
+Feel free to open issues or submit pull requests to contribute.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for more information.
