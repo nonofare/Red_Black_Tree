@@ -109,18 +109,19 @@ int main() {
 ## Installation
 
 1. **Clone the repository:**
+
    ```bash
-   git clone https://github.com/yourusername/RedBlackTree.git
+   git clone https://github.com/nonofare/RedBlackTree.git
    ```
 
 2. **Include the `RBT.h` file in your project.**
 
-3. **Compile with a C++17-compatible compiler.**
+3. **Compile your project with a compiler that supports C++17 or later.**
 
 ## Contributing
 
-Feel free to open issues or submit pull requests to contribute.
+Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more information.
+This project is licensed under the MIT License. See the LICENSE file for details.
